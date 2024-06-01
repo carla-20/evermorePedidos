@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Barra de Tragos y Bebidas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #000;
+            color: #fff;
+        }
+        .menu {
+            display: flex;
+            justify-content: space-around;
+            background-color: #444;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .menu button {
+            background-color: #555;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        .menu button:hover {
+            background-color: #666;
+        }
+        .menu button.active {
+            background-color: #f9a825;
+            color: #000;
+        }
+        .container {
+            display: none;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 10px;
+            background-color: #333;
+        }
+        .container.active {
+            display: block;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            margin-bottom: 10px;
+            color: #f9a825;
+        }
+        .section label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .section input[type="number"] {
+            width: 50px;
+            padding: 5px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 5px;
+        }
+        .section input[type="number"] {
+            width: 60px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 5px;
+            background-color: #555;
+            color: #fff;
+        }
+        .payment-option {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-right: 10px;
+            border: 1px solid #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .payment-option.selected {
+            background-color: #f9a825;
+            color: #000;
+        }
+        button {
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button.confirmar {
+            background-color: #4caf50;
+            color: #fff;
+        }
+        button.confirmar:hover {
+            background-color: #388e3c;
+        }
+        button.descargar {
+            background-color: #fff;
+            color: #000;
+            margin-top: 20px;
+        }
+        button.descargar:hover {
+            background-color: #e0e0e0;
+        }
+        button.anular {
+            background-color: #ff5722;
+            color: #fff;
+        }
+        button.anular:hover {
+            background-color: #e64a19;
+        }
+        button.entregado {
+            background-color: #ffeb3b;
+            color: #000;
+            float: right;
+            animation: blink 1s infinite;
+        }
+        button.entregado.entregado {
+            background-color: rgb(217, 204, 20);
+            color: #fff;
+            animation: none;
+        }
+        
+        @keyframes blink {
+            50% {
+                opacity: 0.5;
+            }
+        }
+        .totals {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .timestamp {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .order-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #444;
+            border-radius: 5px;
+            background-color: #222;
+            padding: 10px;
+        }
+        .order-item {
+            padding: 10px;
+            border-bottom: 1px solid #444;
+            position: relative;
+        }
+        .order-item:last-child {
+            border-bottom: none;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="menu">
+        <button class="active" onclick="mostrarSeccion('tomar-pedido')">Tomar Pedido</button>
+        <button onclick="mostrarSeccion('pedidos-confirmados')">Pedidos Confirmados</button>
+        <button onclick="mostrarSeccion('totales-pago')">Totales por Tipo de Pago</button>
+    </div>
+
+    <div id="tomar-pedido" class="container active">
+        <h1>Tomar Pedido</h1>
+
+        <div class="timestamp">
+            <p id="current-datetime"></p>
+        </div>
+
+        <div class="section">
+            <h2>Tragos</h2>
+            <label>
+                Gin Tonic (Precio: $5.000)
+                <input type="number" id="gin-tonic" min="0" value="0" oninput="calcularTotal()">
+            </label>
+            <label>
+                Vodka con Speed (Precio: $5.000)
+                <input type="number" id="vodka-speed" min="0" value="0" oninput="calcularTotal()">
+            </label>
+            <label>
+                Fernet con Coca (Precio: $5.000)
+                <input type="number" id="fernet-coca" min="0" value="0" oninput="calcularTotal()">
+            </label>
+        </div>
+
+        <div class="section">
+            <h2>Cerveza</h2>
+            <label>
+                Lata Andes (Precio: $3.000)
+                <input type="number" id="lata-andes" min="0" value="0" oninput="calcularTotal()">
+            </label>
+        </div>
+
+        <div class="section">
+            <h2>Sin Alcohol</h2>
+            <label>
+                Agua (Precio: $2.000)
+                <input type="number" id="agua" min="0" value="0" oninput="calcularTotal()">
+            </label>
+            <label>
+                Speed (Precio: $2.000)
+                <input type="number" id="speed" min="0" value="0" oninput="calcularTotal()">
+            </label>
+            <label>
+                Gaseosa (Precio: $2.000)
+                <input type="number" id="gaseosa" min="0" value="0" oninput="calcularTotal()">
+            </label>
+        </div>
+
+        <div class="section">
+            <h2>Tipo de Pago</h2>
+            <div class="payment-option" id="pago-efectivo" onclick="seleccionarPago('efectivo')">Efectivo</div>
+            <div class="payment-option" id="pago-digital" onclick="seleccionarPago('digital')">Digital</div>
+            <div class="payment-option" id="pago-consumicion" onclick="seleccionarPago('consumicion')">Consumición</div>
+        </div>
+
+        <button class="confirmar" onclick="confirmarPedido()">Confirmar Pedido</button>
+
+        <div class="section totals" id="total-section">
+            <p>Total: $<span id="total-amount">0</span></p>
+            <p>Método de Pago: <span id="payment-method">Ninguno</span></p>
+            <p>Número de Pedido: <span id="order-number">1</span></p>
+        </div>
+    </div>
+
+    <div id="pedidos-confirmados" class="container">
+        <h2>Pedidos Confirmados</h2>
+        <div class="order-list" id="order-list"></div>
+    </div>
+
+    <div id="totales-pago" class="container">
+        <h2>Totales por Tipo de Pago</h2>
+        <p>Total Efectivo: $<span id="total-efectivo">0</span></p>
+        <p>Total Digital: $<span id="total-digital">0</span></p>
+        <p>Total Consumición: $<span id="total-consumicion">0</span></p>
+        <p>Total General: $<span id="total-general">0</span></p>
+        <button class="descargar" onclick="descargarExcel()">Descargar Archivo</button>
+    </div>
+
+    <script>
+        let pedidoID = 1;
+        const pedidos = [];
+        let metodoPagoSeleccionado = '';
+
+        function mostrarSeccion(seccion) {
+            const secciones = document.querySelectorAll('.container');
+            secciones.forEach(s => s.classList.remove('active'));
+            document.getElementById(seccion).classList.add('active');
+
+            const botonesMenu = document.querySelectorAll('.menu button');
+            botonesMenu.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.menu button[onclick="mostrarSeccion('${seccion}')"]`).classList.add('active');
+        }
+
+        function calcularTotal() {
+            const precios = {
+                'gin-tonic': 5000,
+                'vodka-speed': 5000,
+                'fernet-coca': 5000,
+                'lata-andes': 3000,
+                'agua': 2000,
+                'speed': 2000,
+                'gaseosa': 2000
+            };
+
+            let total = 0;
+            for (let key in precios) {
+                total += document.getElementById(key).value * precios[key];
+            }
+            document.getElementById('total-amount').innerText = total;
+        }
+
+        function seleccionarPago(tipo) {
+            metodoPagoSeleccionado = tipo;
+            const opciones = document.querySelectorAll('.payment-option');
+            opciones.forEach(opcion => opcion.classList.remove('selected'));
+            document.getElementById(`pago-${tipo}`).classList.add('selected');
+            document.getElementById('payment-method').innerText = tipo.charAt(0).toUpperCase() + tipo.slice(1);
+        }
+
+        function confirmarPedido() {
+            const total = document.getElementById('total-amount').innerText;
+            const metodoPago = metodoPagoSeleccionado ? metodoPagoSeleccionado.charAt(0).toUpperCase() + metodoPagoSeleccionado.slice(1) : 'Ninguno';
+            const fechaHora = new Date().toLocaleString();
+
+            if (metodoPago === 'Ninguno') {
+                alert('Por favor, seleccione un método de pago.');
+                return;
+            }
+
+            const pedido = {
+                id: pedidoID,
+                total: total,
+                metodoPago: metodoPago,
+                fechaHora: fechaHora,
+                entregado: false,
+                ginTonic: document.getElementById('gin-tonic').value,
+                vodkaSpeed: document.getElementById('vodka-speed').value,
+                fernetCoca: document.getElementById('fernet-coca').value,
+                lataAndes: document.getElementById('lata-andes').value,
+                agua: document.getElementById('agua').value,
+                speed: document.getElementById('speed').value,
+                gaseosa: document.getElementById('gaseosa').value
+            };
+
+            pedidos.push(pedido);
+
+            // Mostrar datos del pedido en ventana emergente
+            alert(`Se realizó el siguiente pedido:\nNúmero de Pedido: ${pedidoID}\nTotal: $${total}\nMétodo de Pago: ${metodoPago}\nFecha y Hora: ${fechaHora}`);
+
+            // Agregar pedido a la lista de pedidos confirmados
+            agregarPedidoLista(pedido);
+
+            // Actualizar totales por tipo de pago
+            actualizarTotales();
+
+            // Resetear campos
+            document.getElementById('gin-tonic').value = 0;
+            document.getElementById('vodka-speed').value = 0;
+            document.getElementById('fernet-coca').value = 0;
+            document.getElementById('lata-andes').value = 0;
+            document.getElementById('agua').value = 0;
+            document.getElementById('speed').value = 0;
+            document.getElementById('gaseosa').value = 0;
+            metodoPagoSeleccionado = '';
+            const opciones = document.querySelectorAll('.payment-option');
+            opciones.forEach(opcion => opcion.classList.remove('selected'));
+            document.getElementById('payment-method').innerText = 'Ninguno';
+
+            // Actualizar número de pedido en la interfaz
+            pedidoID++;
+            document.getElementById('order-number').innerText = pedidoID;
+        }
+
+        function agregarPedidoLista(pedido) {
+            const orderList = document.getElementById('order-list');
+            const orderItem = document.createElement('div');
+            orderItem.className = 'order-item';
+            orderItem.id = `pedido-${pedido.id}`;
+            orderItem.innerHTML = `
+                <p>Pedido ${pedido.id} - Total: $${pedido.total} - Pago: ${pedido.metodoPago} - Fecha y Hora: ${pedido.fechaHora}</p>
+                <p>Bebidas: Gin Tonic (${pedido.ginTonic}), Vodka con Speed (${pedido.vodkaSpeed}), Fernet con Coca (${pedido.fernetCoca}), Lata Andes (${pedido.lataAndes}), Agua (${pedido.agua}), Speed (${pedido.speed}), Gaseosa (${pedido.gaseosa})</p>
+                <button class="anular" onclick="confirmarAnulacionPedido(${pedido.id})">Anular</button>
+                <button class="entregado" id="entregado-${pedido.id}" onclick="marcarEntregado(${pedido.id})">En Proceso</button>
+            `;
+            orderList.insertBefore(orderItem, orderList.firstChild);
+        }
+
+        function confirmarAnulacionPedido(id) {
+            if (confirm(`Usted está por anular el pedido N° ${id}. ¿Desea continuar?`)) {
+                anularPedido(id);
+            }
+        }
+
+        function anularPedido(id) {
+            // Eliminar pedido de la lista de pedidos confirmados
+            const pedidoIndex = pedidos.findIndex(p => p.id === id);
+            if (pedidoIndex > -1) {
+                pedidos.splice(pedidoIndex, 1);
+                document.getElementById(`pedido-${id}`).remove();
+                actualizarTotales();
+                alert(`El pedido ${id} ha sido anulado.`);
+            }
+        }
+
+        function marcarEntregado(id) {
+            const pedidoIndex = pedidos.findIndex(p => p.id === id);
+            if (pedidoIndex > -1) {
+                const pedido = pedidos[pedidoIndex];
+                pedido.entregado = true;
+                const botonEntregado = document.getElementById(`entregado-${id}`);
+                botonEntregado.classList.add('entregado');
+                botonEntregado.style.backgroundColor = '#4caf50';
+                botonEntregado.innerText = 'Entregado';
+                botonEntregado.style.animation = 'none';
+                actualizarTotales();
+            }
+        }
+
+        function actualizarTotales() {
+            const totalEfectivo = calcularTotalPorMetodo('Efectivo');
+            const totalDigital = calcularTotalPorMetodo('Digital');
+            const totalConsumicion = calcularTotalPorMetodo('Consumición');
+            const totalGeneral = totalEfectivo + totalDigital + totalConsumicion;
+
+            document.getElementById('total-efectivo').innerText = totalEfectivo;
+            document.getElementById('total-digital').innerText = totalDigital;
+            document.getElementById('total-consumicion').innerText = totalConsumicion;
+            document.getElementById('total-general').innerText = totalGeneral;
+        }
+
+        function descargarExcel() {
+            const wsPedidos = XLSX.utils.json_to_sheet(pedidos);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, wsPedidos, "Pedidos");
+
+            // Agregar hoja resumen
+            const resumen = [
+                ["Total Efectivo", calcularTotalPorMetodo('Efectivo')],
+                ["Total Digital", calcularTotalPorMetodo('Digital')],
+                ["Total Consumición", calcularTotalPorMetodo('Consumición')],
+                ["Total General", calcularTotalPorMetodo('Efectivo') + calcularTotalPorMetodo('Digital') + calcularTotalPorMetodo('Consumición')]
+            ];
+            const wsResumen = XLSX.utils.aoa_to_sheet(resumen);
+            XLSX.utils.book_append_sheet(wb, wsResumen, "Resumen");
+
+            XLSX.writeFile(wb, "Pedidos.xlsx");
+        }
+
+        function calcularTotalPorMetodo(metodo) {
+            return pedidos
+                .filter(p => p.metodoPago === metodo)
+                .reduce((total, p) => total + parseFloat(p.total), 0);
+        }
+
+        function actualizarFechaHora() {
+            document.getElementById('current-datetime').innerText = new Date().toLocaleString();
+        }
+
+        // Actualizar fecha y hora cada segundo
+        setInterval(actualizarFechaHora, 1000);
+    </script>
+</body>
+</html>
