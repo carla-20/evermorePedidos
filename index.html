@@ -180,10 +180,13 @@
             <h2>Tragos</h2>
             <label>
                 Gin Tonic ($6.000)
+                <button onclick="cambiarCantidad('gin-tonic', -1)">-</button>
                 <input type="number" id="gin-tonic" min="0" value="0" oninput="calcularTotal()">
+                <button onclick="cambiarCantidad('gin-tonic', 1)">+</button>
             </label>
             <label>
                 Vodka con Speed ($6.000)
+                
                 <input type="number" id="vodka-speed" min="0" value="0" oninput="calcularTotal()">
             </label>
             <label>
@@ -259,6 +262,14 @@
             const botonesMenu = document.querySelectorAll('.menu button');
             botonesMenu.forEach(btn => btn.classList.remove('active'));
             document.querySelector(`.menu button[onclick="mostrarSeccion('${seccion}')"]`).classList.add('active');
+        }
+
+        function cambiarCantidad(bebida, cantidad) {
+            const input = document.getElementById(bebida);
+            let nuevoValor = parseInt(input.value) + cantidad;
+            if (nuevoValor < 0) nuevoValor = 0;
+            input.value = nuevoValor;
+            calcularTotal();
         }
 
         function calcularTotal() {
