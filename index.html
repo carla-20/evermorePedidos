@@ -96,6 +96,7 @@
             transition: background-color 0.3s;
         }
         button.confirmar {
+            padding: 10px 20px;
             background-color: #4caf50;
             color: #fff;
         }
@@ -103,6 +104,7 @@
             background-color: #388e3c;
         }
         button.descargar {
+            padding: 10px 20px;
             background-color: #fff;
             color: #000;
             margin-top: 20px;
@@ -186,12 +188,15 @@
             </label>
             <label>
                 Vodka con Speed ($6.000)
-
+                <button onclick="cambiarCantidad('vodka-speed', -1)">-</button>
                 <input type="number" id="vodka-speed" min="0" value="0" oninput="calcularTotal()">
+                <button onclick="cambiarCantidad('vodka-speed', 1)">+</button>
             </label>
             <label>
                 Fernet con Coca ($6.000)
+                <button onclick="cambiarCantidad('fernet-coca', -1)">-</button>
                 <input type="number" id="fernet-coca" min="0" value="0" oninput="calcularTotal()">
+                <button onclick="cambiarCantidad('fernet-coca', 1)">+</button>
             </label>
         </div>
 
@@ -199,7 +204,9 @@
             <h2>Cerveza</h2>
             <label>
                 Lata Andes ($5.000)
+                <button onclick="cambiarCantidad('lata-andes', -1)">-</button>
                 <input type="number" id="lata-andes" min="0" value="0" oninput="calcularTotal()">
+                <button onclick="cambiarCantidad('lata-andes', 1)">+</button>
             </label>
         </div>
 
@@ -207,15 +214,21 @@
             <h2>Sin Alcohol</h2>
             <label>
                 Agua ($3.500)
+                <button onclick="cambiarCantidad('agua', -1)">-</button>
                 <input type="number" id="agua" min="0" value="0" oninput="calcularTotal()">
+                <button onclick="cambiarCantidad('agua', 1)">+</button>
             </label>
             <label>
                 Speed ($4.000)
+                <button onclick="cambiarCantidad('speed', -1)">-</button>
                 <input type="number" id="speed" min="0" value="0" oninput="calcularTotal()">
+                <button onclick="cambiarCantidad('speed', 1)">+</button>
             </label>
             <label>
                 Gaseosa ($3.500)
+                <button onclick="cambiarCantidad('gaseosa', -1)">-</button>
                 <input type="number" id="gaseosa" min="0" value="0" oninput="calcularTotal()">
+                <button onclick="cambiarCantidad('gaseosa', 1)">+</button>
             </label>
         </div>
 
