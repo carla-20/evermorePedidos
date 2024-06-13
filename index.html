@@ -113,6 +113,7 @@
             background-color: #e0e0e0;
         }
         button.anular {
+            padding: 10px 20px;
             background-color: #ff5722;
             color: #fff;
         }
@@ -120,13 +121,14 @@
             background-color: #e64a19;
         }
         button.entregado {
+            padding: 10px 20px;
             background-color: #ffeb3b;
             color: #000;
             float: right;
             animation: blink 1s infinite;
         }
         button.entregado.entregado {
-            background-color: rgb(217, 204, 20);
+            background-color: #ffeb3b;
             color: #fff;
             animation: none;
         }
@@ -187,13 +189,13 @@
                 <button onclick="cambiarCantidad('gin-tonic', 1)">+</button>
             </label>
             <label>
-                Vodka con Speed ($6.000)
+                Vodka/Speed ($6.000)
                 <button onclick="cambiarCantidad('vodka-speed', -1)">-</button>
                 <input type="number" id="vodka-speed" min="0" value="0" oninput="calcularTotal()">
                 <button onclick="cambiarCantidad('vodka-speed', 1)">+</button>
             </label>
             <label>
-                Fernet con Coca ($6.000)
+                Fernet/Coca ($6.000)
                 <button onclick="cambiarCantidad('fernet-coca', -1)">-</button>
                 <input type="number" id="fernet-coca" min="0" value="0" oninput="calcularTotal()">
                 <button onclick="cambiarCantidad('fernet-coca', 1)">+</button>
@@ -350,7 +352,7 @@
             pedidos.push(pedido);
 
             // Mostrar datos del pedido en ventana emergente
-            alert(`Se realizó el siguiente pedido:\nNúmero de Pedido: ${pedidoID}\nTotal: $${total}\nMétodo de Pago: ${metodoPago}\nFecha y Hora: ${fechaHora}`);
+            alert(`Se realizó el siguiente pedido:\nNúmero de Pedido: ${pedidoID}\nBebidas:\nTotal: $${total}\nMétodo de Pago: ${metodoPago}\nFecha y Hora: ${fechaHora}`);
 
             // Agregar pedido a la lista de pedidos confirmados
             agregarPedidoLista(pedido);
@@ -370,6 +372,7 @@
             const opciones = document.querySelectorAll('.payment-option');
             opciones.forEach(opcion => opcion.classList.remove('selected'));
             document.getElementById('payment-method').innerText = 'Ninguno';
+            document.getElementById('total-amount').innerText = 0;
 
             // Actualizar número de pedido en la interfaz
             pedidoID++;
@@ -382,10 +385,15 @@
             orderItem.className = 'order-item';
             orderItem.id = `pedido-${pedido.id}`;
             orderItem.innerHTML = `
-                <p>Pedido ${pedido.id} - Total: $${pedido.total} - Pago: ${pedido.metodoPago} - Fecha y Hora: ${pedido.fechaHora}</p>
-                <p>Bebidas: Gin Tonic (${pedido.ginTonic}), Vodka con Speed (${pedido.vodkaSpeed}), Fernet con Coca (${pedido.fernetCoca}), Lata Andes (${pedido.lataAndes}), Agua (${pedido.agua}), Speed (${pedido.speed}), Gaseosa (${pedido.gaseosa})</p>
-                <button class="anular" onclick="confirmarAnulacionPedido(${pedido.id})">Anular</button>
-                <button class="entregado" id="entregado-${pedido.id}" onclick="marcarEntregado(${pedido.id})">En Proceso</button>
+
+            <p>Pedido ${pedido.id} </p>
+            <p>Bebidas: </p>
+            <p>Total: $${pedido.total} </p>
+            <p>Pago: ${pedido.metodoPago} </p> 
+            <p>Fecha y Hora: ${pedido.fechaHora}</p>
+            <p>Bebidas: Gin Tonic (${pedido.ginTonic}), Vodka con Speed (${pedido.vodkaSpeed}), Fernet con Coca (${pedido.fernetCoca}), Lata Andes (${pedido.lataAndes}), Agua (${pedido.agua}), Speed (${pedido.speed}), Gaseosa (${pedido.gaseosa})</p>
+            <button class="anular" onclick="confirmarAnulacionPedido(${pedido.id})">Anular</button>
+            <button class="entregado" id="entregado-${pedido.id}" onclick="marcarEntregado(${pedido.id})">En Proceso</button>
             `;
             orderList.insertBefore(orderItem, orderList.firstChild);
         }
